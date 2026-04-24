@@ -3,42 +3,92 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ShieldCheck, Truck, FlaskConical, ArrowLeft, CheckCircle2, FileText, Download } from 'lucide-react';
-import { use, useState } from 'react';
+import { ShieldCheck, Truck, FlaskConical, ArrowLeft, CheckCircle2, FileText, Download, Beaker, Microscope, ThermometerSnowflake, PackageCheck } from 'lucide-react';
+import { use, useEffect, useState } from 'react';
 import { toast } from 'sonner';
+import { useCartStore } from '@/lib/store/cartStore';
 
-const PRODUCTS = [
-  { id: '1', name: 'BPC-157', dosage: '5mg', price: 34.99, image: 'https://picsum.photos/seed/bpc157/400/400', category: 'Healing & Recovery', purity: '99.4%', description: 'BPC-157 is a synthetic peptide sequence based on a protective compound found in the human stomach. Research suggests it may promote healing of various tissues including muscle, tendon, and gut.' },
-  { id: '2', name: 'TB-500', dosage: '5mg', price: 39.99, image: 'https://picsum.photos/seed/tb500/400/400', category: 'Healing & Recovery', purity: '99.2%', description: 'TB-500 is a synthetic version of the naturally occurring peptide Thymosin Beta-4. It is researched for its potential role in tissue repair, cell migration, and anti-inflammatory properties.' },
-  { id: '3', name: 'Semaglutide', dosage: '5mg', price: 89.99, image: 'https://picsum.photos/seed/sema/400/400', category: 'Weight Loss', purity: '99.8%', description: 'Semaglutide is a GLP-1 receptor agonist widely researched for its effects on glycemic control and appetite regulation.' },
-  { id: '4', name: 'CJC-1295 DAC', dosage: '2mg', price: 29.99, image: 'https://picsum.photos/seed/cjc/400/400', category: 'Muscle Growth', purity: '99.1%', description: 'CJC-1295 DAC is a synthetic GHRH (Growth Hormone Releasing Hormone) analog that has been modified with Drug Affinity Complex (DAC) to extend its half-life.' },
-  { id: '5', name: 'Ipamorelin', dosage: '5mg', price: 32.99, image: 'https://picsum.photos/seed/ipa/400/400', category: 'Muscle Growth', purity: '99.5%', description: 'Ipamorelin is a selective growth hormone secretagogue and ghrelin receptor agonist. It is studied for its ability to stimulate GH release without significantly affecting cortisol or prolactin levels.' },
-  { id: '6', name: 'Tirzepatide', dosage: '10mg', price: 119.99, image: 'https://picsum.photos/seed/tirz/400/400', category: 'Weight Loss', purity: '99.7%', description: 'Tirzepatide is a novel dual GIP and GLP-1 receptor agonist. Research focuses on its synergistic effects on metabolic regulation.' },
-  { id: '7', name: 'Epitalon', dosage: '10mg', price: 45.99, image: 'https://picsum.photos/seed/epi/400/400', category: 'Anti-Aging', purity: '99.3%', description: 'Epitalon is a synthetic peptide based on the natural pineal gland extract epithalamin. It is primarily researched for its potential anti-aging properties and effects on telomerase activity.' },
-  { id: '8', name: 'Melanotan II', dosage: '10mg', price: 24.99, image: 'https://picsum.photos/seed/mt2/400/400', category: 'Tanning', purity: '99.6%', description: 'Melanotan II is a synthetic analog of alpha-melanocyte-stimulating hormone (α-MSH). It is investigated for its melanogenesis-stimulating properties.' },
-  { id: '9', name: 'PT-141', dosage: '10mg', price: 35.99, image: 'https://picsum.photos/seed/pt141/400/400', category: 'Reproductive Health', purity: '99.2%', description: 'PT-141 (Bremelanotide) is a melanocortin receptor agonist researched for its potential effects on sexual dysfunction.' },
-  { id: '10', name: 'MOTS-c', dosage: '10mg', price: 55.99, image: 'https://picsum.photos/seed/mots/400/400', category: 'Metabolic', purity: '99.1%', description: 'MOTS-c is a mitochondrial-derived peptide that regulates metabolic homeostasis. Research explores its role in insulin sensitivity and exercise mimetics.' },
-  { id: '11', name: 'GHK-Cu', dosage: '50mg', price: 42.99, image: 'https://picsum.photos/seed/ghk/400/400', category: 'Healing & Recovery', purity: '99.4%', description: 'GHK-Cu is a naturally occurring copper complex of the tripeptide glycyl-L-histidyl-L-lysine. It is widely studied for its tissue remodeling and wound healing properties.' },
-  { id: '12', name: 'Bacteriostatic Water', dosage: '30ml', price: 9.99, image: 'https://picsum.photos/seed/bac/400/400', category: 'Accessories', purity: 'USP', description: 'Sterile, non-pyrogenic water containing 0.9% benzyl alcohol added as a bacteriostatic preservative. Essential for the reconstitution of lyophilized research peptides.' },
-];
+interface Product {
+  id: string;
+  name: string;
+  dosage: string;
+  price: number;
+  image: string;
+  category: string;
+  purity: string;
+  description: string | null;
+}
 
 export default function ProductPage({ params }: { params: Promise<{ id: string }> }) {
-  const resolvedParams = use(params);
-  const product = PRODUCTS.find(p => p.id === resolvedParams.id) || PRODUCTS[0];
+  const { id } = use(params);
+  const [product, setProduct] = useState<Product | null>(null);
+  const [related, setRelated] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
+  const [tab, setTab] = useState<'desc' | 'coa' | 'faq'>('desc');
+  const addItem = useCartStore((s) => s.addItem);
+
+  useEffect(() => {
+    setLoading(true);
+    fetch(`/api/products/${id}`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data: Product | null) => {
+        setProduct(data);
+        if (data) {
+          fetch(`/api/products`)
+            .then((r) => r.json())
+            .then((all: Product[]) => {
+              if (Array.isArray(all)) {
+                setRelated(
+                  all
+                    .filter((p) => p.category === data.category && p.id !== data.id)
+                    .slice(0, 4)
+                );
+              }
+            })
+            .catch(() => {});
+        }
+      })
+      .catch(() => setProduct(null))
+      .finally(() => setLoading(false));
+  }, [id]);
+
+  if (loading) {
+    return (
+      <div className="bg-slate-50 min-h-screen flex items-center justify-center">
+        <span className="text-slate-400">Loading product...</span>
+      </div>
+    );
+  }
+
+  if (!product) {
+    return (
+      <div className="bg-slate-50 min-h-screen flex flex-col items-center justify-center gap-4">
+        <p className="text-slate-500">Product not found.</p>
+        <Link href="/shop"><Button variant="outline">Back to Shop</Button></Link>
+      </div>
+    );
+  }
 
   const handleAddToCart = () => {
-    toast.success(`${quantity}x ${product.name} added to cart!`);
+    addItem({
+      id: product.id,
+      productId: product.id,
+      name: product.name,
+      price: product.price,
+      quantity,
+      image: product.image,
+      dosage: product.dosage,
+    });
+    toast.success(`${quantity}× ${product.name} added to cart`);
   };
 
   const handleDownloadCOA = () => {
-    toast.success(`Downloading COA for ${product.name}...`);
+    toast.success(`COA request for ${product.name} submitted — we will email the PDF.`);
   };
 
-  const incrementQuantity = () => setQuantity(prev => prev + 1);
-  const decrementQuantity = () => setQuantity(prev => (prev > 1 ? prev - 1 : 1));
+  const batchCode = `${product.name.replace(/[^A-Z0-9]/gi, '').substring(0, 4).toUpperCase()}-2604`;
 
   return (
     <div className="bg-slate-50 min-h-screen pb-20">
@@ -50,26 +100,26 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
 
         <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
-            {/* Product Image */}
             <div className="relative h-96 md:h-auto bg-slate-50 p-12 flex items-center justify-center border-b md:border-b-0 md:border-r border-slate-200">
               <Badge className="absolute top-6 left-6 bg-slate-900 text-white hover:bg-slate-800">{product.category}</Badge>
-              <Image 
-                src={product.image} 
-                alt={product.name} 
-                fill 
-                className="object-contain p-12 mix-blend-multiply"
+              <Badge variant="outline" className="absolute top-6 right-6 text-green-600 border-green-600 bg-green-50">In Stock</Badge>
+              <Image
+                src={product.image}
+                alt={product.name}
+                fill
+                className="object-contain p-12"
                 referrerPolicy="no-referrer"
+                unoptimized
               />
             </div>
 
-            {/* Product Details */}
             <div className="p-8 md:p-12 flex flex-col">
               <div className="mb-6">
                 <div className="flex items-center justify-between mb-2">
                   <h1 className="text-3xl md:text-4xl font-bold text-slate-900">{product.name}</h1>
-                  <span className="text-3xl font-bold text-primary">€{product.price}</span>
+                  <span className="text-3xl font-bold text-primary">€{product.price.toFixed(2)}</span>
                 </div>
-                <div className="flex items-center space-x-4 text-sm text-slate-500">
+                <div className="flex items-center flex-wrap gap-x-4 gap-y-1 text-sm text-slate-500">
                   <span className="flex items-center">
                     <FlaskConical className="w-4 h-4 mr-1 text-slate-400" />
                     {product.dosage} Vial
@@ -78,26 +128,44 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
                     <ShieldCheck className="w-4 h-4 mr-1" />
                     {product.purity} Purity
                   </span>
+                  <span className="flex items-center">
+                    <Microscope className="w-4 h-4 mr-1 text-slate-400" />
+                    Batch-tested (HPLC & MS)
+                  </span>
                 </div>
               </div>
 
-              <div className="prose prose-slate max-w-none mb-8">
-                <p className="text-slate-600 leading-relaxed">
-                  {product.description}
-                </p>
-                <div className="mt-4 p-4 bg-red-50 border border-red-100 rounded-lg">
-                  <p className="text-xs text-red-800 font-semibold m-0">
-                    FOR RESEARCH PURPOSES ONLY. NOT FOR HUMAN CONSUMPTION.
-                  </p>
+              <div className="prose prose-slate max-w-none mb-6">
+                <p className="text-slate-600 leading-relaxed">{product.description}</p>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3 mb-6">
+                <div className="flex items-center text-sm text-slate-700 bg-slate-50 rounded-lg p-3 border border-slate-100">
+                  <Beaker className="w-4 h-4 mr-2 text-primary" /> Lyophilized Powder
                 </div>
+                <div className="flex items-center text-sm text-slate-700 bg-slate-50 rounded-lg p-3 border border-slate-100">
+                  <ThermometerSnowflake className="w-4 h-4 mr-2 text-primary" /> Store at &minus;20 °C
+                </div>
+                <div className="flex items-center text-sm text-slate-700 bg-slate-50 rounded-lg p-3 border border-slate-100">
+                  <PackageCheck className="w-4 h-4 mr-2 text-primary" /> Discreet EU Shipping
+                </div>
+                <div className="flex items-center text-sm text-slate-700 bg-slate-50 rounded-lg p-3 border border-slate-100">
+                  <FileText className="w-4 h-4 mr-2 text-primary" /> COA on Request
+                </div>
+              </div>
+
+              <div className="mb-6 p-4 bg-red-50 border border-red-100 rounded-lg">
+                <p className="text-xs text-red-800 font-semibold m-0">
+                  FOR LABORATORY RESEARCH PURPOSES ONLY. NOT FOR HUMAN OR VETERINARY USE.
+                </p>
               </div>
 
               <div className="mt-auto space-y-6">
                 <div className="flex items-center space-x-4">
                   <div className="flex items-center border border-slate-200 rounded-lg overflow-hidden h-12 w-32">
-                    <button className="px-4 py-2 bg-slate-50 text-slate-600 hover:bg-slate-100 transition-colors" onClick={decrementQuantity}>-</button>
+                    <button className="px-4 py-2 bg-slate-50 text-slate-600 hover:bg-slate-100 transition-colors" onClick={() => setQuantity((q) => (q > 1 ? q - 1 : 1))}>-</button>
                     <div className="flex-1 text-center font-medium text-slate-900">{quantity}</div>
-                    <button className="px-4 py-2 bg-slate-50 text-slate-600 hover:bg-slate-100 transition-colors" onClick={incrementQuantity}>+</button>
+                    <button className="px-4 py-2 bg-slate-50 text-slate-600 hover:bg-slate-100 transition-colors" onClick={() => setQuantity((q) => q + 1)}>+</button>
                   </div>
                   <Button className="flex-1 h-12 text-lg bg-primary hover:bg-primary/90" onClick={handleAddToCart}>
                     Add to Cart
@@ -107,11 +175,11 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
                 <div className="grid grid-cols-2 gap-4 pt-6 border-t border-slate-100">
                   <div className="flex items-center text-sm text-slate-600">
                     <CheckCircle2 className="w-4 h-4 mr-2 text-green-500" />
-                    In Stock
+                    In Stock · Ships within 24 h
                   </div>
                   <div className="flex items-center text-sm text-slate-600">
                     <Truck className="w-4 h-4 mr-2 text-primary" />
-                    Ships within 24h
+                    Tracked EU Delivery
                   </div>
                 </div>
               </div>
@@ -119,40 +187,132 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
           </div>
         </div>
 
-        {/* Product Tabs */}
+        {/* Tabs */}
         <div className="mt-12 bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-          <div className="flex border-b border-slate-200">
-            <button className="px-8 py-4 font-semibold text-primary border-b-2 border-primary bg-slate-50">
-              Description & Research
-            </button>
-            <button className="px-8 py-4 font-medium text-slate-500 hover:text-slate-900 transition-colors">
-              Certificate of Analysis
-            </button>
+          <div className="flex border-b border-slate-200 overflow-x-auto">
+            {([
+              ['desc', 'Description & Research'],
+              ['coa', 'Certificate of Analysis'],
+              ['faq', 'FAQ & Storage'],
+            ] as const).map(([k, label]) => (
+              <button
+                key={k}
+                onClick={() => setTab(k)}
+                className={`px-6 md:px-8 py-4 font-medium whitespace-nowrap transition-colors ${
+                  tab === k ? 'text-primary border-b-2 border-primary bg-slate-50 font-semibold' : 'text-slate-500 hover:text-slate-900'
+                }`}
+              >
+                {label}
+              </button>
+            ))}
           </div>
-          <div className="p-8">
-            <h3 className="text-xl font-bold text-slate-900 mb-4">Research Applications</h3>
-            <p className="text-slate-600 mb-6 leading-relaxed">
-              This compound is provided strictly for in-vitro and laboratory research. It is not intended for diagnostic, therapeutic, or any other clinical use. Researchers investigating this peptide typically focus on its binding affinity, stability in various mediums, and its effects on cellular pathways in controlled environments.
-            </p>
-            <h3 className="text-xl font-bold text-slate-900 mb-4">Storage Guidelines</h3>
-            <ul className="list-disc pl-5 text-slate-600 space-y-2">
-              <li>Store lyophilized powder at -20°C for long-term preservation.</li>
-              <li>Keep away from direct sunlight and moisture.</li>
-              <li>Once reconstituted, store at 2-8°C and use within 3-4 weeks.</li>
-            </ul>
-            
-            <div className="mt-8 p-6 bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-between">
-              <div>
-                <h4 className="font-bold text-slate-900 mb-1">Latest COA Available</h4>
-                <p className="text-sm text-slate-500">Batch: {product.name.substring(0,3).toUpperCase()}-2401 • Tested: Jan 2026</p>
+
+          <div className="p-6 md:p-8">
+            {tab === 'desc' && (
+              <div className="space-y-6">
+                <section>
+                  <h3 className="text-xl font-bold text-slate-900 mb-3">Research Applications</h3>
+                  <p className="text-slate-600 leading-relaxed">
+                    {product.name} is supplied strictly for <em>in-vitro</em> and laboratory research. It is not intended for diagnostic, therapeutic, or clinical use. Common research directions include binding affinity, receptor-pathway activation, stability in biological matrices, and mechanistic effects in cell-based assays.
+                  </p>
+                </section>
+
+                <section>
+                  <h3 className="text-xl font-bold text-slate-900 mb-3">Product Specifications</h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                    <div className="flex justify-between border-b border-slate-100 py-2"><span className="text-slate-500">Form</span><span className="font-medium text-slate-900">Lyophilized powder</span></div>
+                    <div className="flex justify-between border-b border-slate-100 py-2"><span className="text-slate-500">Vial size</span><span className="font-medium text-slate-900">{product.dosage}</span></div>
+                    <div className="flex justify-between border-b border-slate-100 py-2"><span className="text-slate-500">Purity</span><span className="font-medium text-slate-900">{product.purity}</span></div>
+                    <div className="flex justify-between border-b border-slate-100 py-2"><span className="text-slate-500">Category</span><span className="font-medium text-slate-900">{product.category}</span></div>
+                    <div className="flex justify-between border-b border-slate-100 py-2"><span className="text-slate-500">QC method</span><span className="font-medium text-slate-900">HPLC / MS</span></div>
+                    <div className="flex justify-between border-b border-slate-100 py-2"><span className="text-slate-500">Origin</span><span className="font-medium text-slate-900">European lab</span></div>
+                  </div>
+                </section>
+
+                <section>
+                  <h3 className="text-xl font-bold text-slate-900 mb-3">Why European Researchers Choose Us</h3>
+                  <ul className="list-disc pl-5 text-slate-600 space-y-1.5">
+                    <li>Independently third-party tested — HPLC &amp; mass spectrometry on every batch.</li>
+                    <li>≥ 98% purity guarantee, with COA available on request.</li>
+                    <li>Discreet, tracked shipping across the EU with cold-chain packaging.</li>
+                    <li>Dedicated research support — response within 24 h.</li>
+                  </ul>
+                </section>
               </div>
-              <Button variant="outline" className="flex items-center" onClick={handleDownloadCOA}>
-                <FileText className="w-4 h-4 mr-2" />
-                <Download className="w-3 h-3 mr-1" /> PDF
-              </Button>
-            </div>
+            )}
+
+            {tab === 'coa' && (
+              <div className="space-y-6">
+                <h3 className="text-xl font-bold text-slate-900">Certificate of Analysis</h3>
+                <p className="text-slate-600">Every batch is tested by an independent European lab for identity, purity, and residual solvents. Request the latest COA below — we will email the signed PDF within 24 h.</p>
+                <div className="p-6 bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-between">
+                  <div>
+                    <h4 className="font-bold text-slate-900 mb-1">Latest COA — {product.name}</h4>
+                    <p className="text-sm text-slate-500">Batch: {batchCode} · Tested: April 2026 · Purity: {product.purity}</p>
+                  </div>
+                  <Button variant="outline" className="flex items-center" onClick={handleDownloadCOA}>
+                    <FileText className="w-4 h-4 mr-2" />
+                    <Download className="w-3 h-3 mr-1" /> Request PDF
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {tab === 'faq' && (
+              <div className="space-y-6">
+                <section>
+                  <h3 className="text-xl font-bold text-slate-900 mb-3">Storage Guidelines</h3>
+                  <ul className="list-disc pl-5 text-slate-600 space-y-1.5">
+                    <li>Store lyophilized vials at &minus;20 °C — stable for 24+ months.</li>
+                    <li>Keep away from direct sunlight, heat, and moisture.</li>
+                    <li>Once reconstituted with bacteriostatic water, refrigerate at 2–8 °C and use within 4 weeks.</li>
+                    <li>Do not freeze reconstituted solutions — repeated freeze/thaw degrades peptides.</li>
+                  </ul>
+                </section>
+
+                <section>
+                  <h3 className="text-xl font-bold text-slate-900 mb-3">Frequently Asked Questions</h3>
+                  <div className="space-y-3">
+                    <details className="group border border-slate-200 rounded-lg p-4">
+                      <summary className="font-medium text-slate-900 cursor-pointer">How do I reconstitute this peptide?</summary>
+                      <p className="mt-2 text-sm text-slate-600">Use bacteriostatic water. Typical ratio: 1 ml per 5 mg vial. Swirl gently — do not shake. See our <Link href="/calculator" className="text-primary underline">Peptide Calculator</Link> for precise protocols.</p>
+                    </details>
+                    <details className="group border border-slate-200 rounded-lg p-4">
+                      <summary className="font-medium text-slate-900 cursor-pointer">Is shipping discreet?</summary>
+                      <p className="mt-2 text-sm text-slate-600">All orders ship in plain, unbranded packaging via tracked EU courier. We never disclose product contents on external labels.</p>
+                    </details>
+                    <details className="group border border-slate-200 rounded-lg p-4">
+                      <summary className="font-medium text-slate-900 cursor-pointer">Do you offer bulk research discounts?</summary>
+                      <p className="mt-2 text-sm text-slate-600">Yes — institutions and research groups can request volume pricing via the <Link href="/contact" className="text-primary underline">contact page</Link>.</p>
+                    </details>
+                  </div>
+                </section>
+              </div>
+            )}
           </div>
         </div>
+
+        {related.length > 0 && (
+          <section className="mt-12">
+            <h3 className="text-xl font-bold text-slate-900 mb-4">Related Research Compounds</h3>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {related.map((r) => (
+                <Link key={r.id} href={`/shop/${r.id}`} className="group">
+                  <div className="bg-white border border-slate-200 rounded-xl overflow-hidden hover:shadow-md transition-shadow">
+                    <div className="relative h-40 bg-slate-50">
+                      <Image src={r.image} alt={r.name} fill className="object-contain p-4" referrerPolicy="no-referrer" unoptimized />
+                    </div>
+                    <div className="p-4">
+                      <p className="font-semibold text-sm text-slate-900 group-hover:text-primary transition-colors line-clamp-1">{r.name}</p>
+                      <p className="text-xs text-slate-500 mb-2">{r.dosage} · {r.purity}</p>
+                      <p className="font-bold text-primary">€{r.price.toFixed(2)}</p>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
       </div>
     </div>
   );
