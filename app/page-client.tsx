@@ -5,40 +5,56 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ShieldCheck, Truck, CreditCard, Award, FlaskConical, ArrowRight, Star } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { ShieldCheck, Truck, FlaskConical, Award, ArrowRight, Star } from 'lucide-react';
 import { toast } from 'sonner';
+import { useCartStore } from '@/lib/store/cartStore';
+
+export type HomeProduct = {
+  id: string;
+  name: string;
+  dosage: string;
+  price: number;
+  image: string;
+  category: string;
+  purity: string;
+};
 
 const CATEGORIES = [
-  { name: 'Muscle Growth', image: 'https://picsum.photos/seed/muscle/400/300', slug: 'muscle-growth' },
-  { name: 'Weight Loss', image: 'https://picsum.photos/seed/weight/400/300', slug: 'weight-loss' },
-  { name: 'Healing & Recovery', image: 'https://picsum.photos/seed/healing/400/300', slug: 'healing-recovery' },
-  { name: 'Anti-Aging', image: 'https://picsum.photos/seed/antiaging/400/300', slug: 'anti-aging' },
+  { name: 'Muscle Growth', image: '/images/category-muscle.svg', slug: 'Muscle Growth' },
+  { name: 'Weight Loss', image: '/images/category-weight.svg', slug: 'Weight Loss' },
+  { name: 'Healing & Recovery', image: '/images/category-healing.svg', slug: 'Healing & Recovery' },
+  { name: 'Anti-Aging', image: '/images/category-antiaging.svg', slug: 'Anti-Aging' },
 ];
 
-const BEST_SELLERS = [
-  { id: '1', name: 'BPC-157', dosage: '5mg', price: 34.99, image: 'https://picsum.photos/seed/bpc157/400/400', category: 'Healing' },
-  { id: '2', name: 'TB-500', dosage: '5mg', price: 39.99, image: 'https://picsum.photos/seed/tb500/400/400', category: 'Healing' },
-  { id: '3', name: 'Semaglutide', dosage: '5mg', price: 89.99, image: 'https://picsum.photos/seed/sema/400/400', category: 'Weight Loss' },
-  { id: '4', name: 'CJC-1295 DAC', dosage: '2mg', price: 29.99, image: 'https://picsum.photos/seed/cjc/400/400', category: 'Muscle Growth' },
-];
+export default function Home({ bestSellers }: { bestSellers: HomeProduct[] }) {
+  const addItem = useCartStore((s) => s.addItem);
 
-export default function Home() {
-  const handleAddToCart = (productName: string) => {
-    toast.success(`${productName} added to cart!`);
+  const handleAddToCart = (product: HomeProduct) => {
+    addItem({
+      id: product.id,
+      productId: product.id,
+      name: product.name,
+      price: product.price,
+      quantity: 1,
+      image: product.image,
+      dosage: product.dosage,
+    });
+    toast.success(`${product.name} added to cart`);
   };
 
   return (
     <div className="flex flex-col min-h-screen">
-      {/* 1. Hero Banner */}
+      {/* 1. Hero */}
       <section className="relative bg-slate-900 text-white py-24 md:py-32 overflow-hidden">
-        <div className="absolute inset-0 z-0 opacity-20">
-          <Image 
-            src="https://picsum.photos/seed/lab/1920/1080" 
-            alt="Laboratory background" 
-            fill 
+        <div className="absolute inset-0 z-0 opacity-40">
+          <Image
+            src="/images/hero.svg"
+            alt="EuroPeptide Pro European research peptide laboratory — molecular chain pattern"
+            fill
             className="object-cover"
-            referrerPolicy="no-referrer"
+            priority
+            fetchPriority="high"
+            sizes="100vw"
           />
         </div>
         <div className="container relative z-10 mx-auto px-4 text-center md:text-left">
@@ -50,7 +66,7 @@ export default function Home() {
               99%+ Purity Research Peptides
             </h1>
             <p className="text-lg md:text-xl text-slate-300 mb-8 max-w-2xl">
-              Elevate your research with premium, 3rd-party tested peptides. 
+              Elevate your research with premium, third-party tested peptides.
               Shipped securely from within the EU with full COA transparency.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
@@ -65,7 +81,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 2. Trust Bar */}
+      {/* 2. Trust bar */}
       <section className="bg-slate-100 border-b py-6">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
@@ -89,33 +105,31 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 3. Product Categories */}
+      {/* 3. Categories */}
       <section className="py-20">
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-end mb-10">
             <div>
               <h2 className="text-3xl font-bold tracking-tight text-slate-900 mb-2">Shop by Category</h2>
-              <p className="text-slate-500">Find the specific peptides for your research focus.</p>
+              <p className="text-slate-500">Find the specific research peptides for your protocol.</p>
             </div>
             <Link href="/shop" className="hidden sm:flex items-center text-primary font-medium hover:text-accent transition-colors">
               View All <ArrowRight className="ml-2 w-4 h-4" />
             </Link>
           </div>
-          
+
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {CATEGORIES.map((category) => (
-              <Link key={category.slug} href={`/shop?category=${category.slug}`} className="group">
+              <Link key={category.slug} href={`/shop?category=${encodeURIComponent(category.slug)}`} className="group">
                 <Card className="overflow-hidden border-0 shadow-md hover:shadow-xl transition-all duration-300">
                   <div className="relative h-48 w-full overflow-hidden">
-                    <Image 
-                      src={category.image} 
-                      alt={category.name} 
-                      fill 
+                    <Image
+                      src={category.image}
+                      alt={`${category.name} research peptides category — EuroPeptide Pro`}
+                      fill
                       className="object-cover group-hover:scale-105 transition-transform duration-500"
-                      referrerPolicy="no-referrer"
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
-                    <h3 className="absolute bottom-4 left-4 text-white font-bold text-xl">{category.name}</h3>
                   </div>
                 </Card>
               </Link>
@@ -124,47 +138,54 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 4. Best Sellers */}
+      {/* 4. Best sellers */}
       <section className="py-20 bg-slate-50">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold tracking-tight text-slate-900 mb-4">Best Selling Peptides</h2>
             <p className="text-slate-500 max-w-2xl mx-auto">Our most popular research compounds, rigorously tested and verified for purity.</p>
           </div>
-          
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {BEST_SELLERS.map((product) => (
-              <Card key={product.id} className="overflow-hidden flex flex-col hover:shadow-lg transition-shadow">
-                <div className="relative h-64 w-full bg-white p-6 flex items-center justify-center">
-                  <Badge className="absolute top-4 left-4 bg-slate-900">{product.category}</Badge>
-                  <Badge variant="outline" className="absolute top-4 right-4 text-green-600 border-green-600 bg-green-50">In Stock</Badge>
-                  <Image 
-                    src={product.image} 
-                    alt={product.name} 
-                    fill 
-                    className="object-contain p-8 mix-blend-multiply"
-                    referrerPolicy="no-referrer"
-                  />
-                </div>
-                <CardContent className="p-6 flex-1 flex flex-col">
-                  <div className="flex justify-between items-start mb-2">
-                    <div>
-                      <h3 className="font-bold text-lg text-slate-900">{product.name}</h3>
-                      <p className="text-sm text-slate-500">{product.dosage} Vial</p>
+
+          {bestSellers.length === 0 ? (
+            <p className="text-center text-slate-400">Catalog loading. <Link href="/shop" className="text-primary underline">Browse the full shop →</Link></p>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {bestSellers.map((product) => (
+                <Card key={product.id} className="overflow-hidden flex flex-col hover:shadow-lg transition-shadow">
+                  <Link href={`/shop/${product.id}`} className="relative h-64 w-full bg-white p-6 flex items-center justify-center">
+                    <Badge className="absolute top-4 left-4 bg-slate-900 z-10">{product.category}</Badge>
+                    <Badge variant="outline" className="absolute top-4 right-4 text-green-600 border-green-600 bg-green-50 z-10">In Stock</Badge>
+                    <Image
+                      src={product.image}
+                      alt={`${product.name} ${product.dosage} research peptide vial — ${product.purity} purity`}
+                      fill
+                      className="object-contain p-8"
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                      unoptimized
+                    />
+                  </Link>
+                  <CardContent className="p-6 flex-1 flex flex-col">
+                    <div className="flex justify-between items-start mb-2">
+                      <div>
+                        <Link href={`/shop/${product.id}`}>
+                          <h3 className="font-bold text-lg text-slate-900 hover:text-primary transition-colors">{product.name}</h3>
+                        </Link>
+                        <p className="text-sm text-slate-500">{product.dosage} Vial · {product.purity}</p>
+                      </div>
+                      <span className="font-bold text-lg text-primary">€{product.price.toFixed(2)}</span>
                     </div>
-                    <span className="font-bold text-lg text-primary">€{product.price}</span>
-                  </div>
-                  <div className="mt-auto pt-4">
-                    <Button className="w-full bg-primary hover:bg-primary/90" onClick={() => handleAddToCart(product.name)}>Add to Cart</Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                    <div className="mt-auto pt-4">
+                      <Button className="w-full bg-primary hover:bg-primary/90" onClick={() => handleAddToCart(product)}>Add to Cart</Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
-      {/* 5. Why Choose Us */}
+      {/* 5. Why choose us */}
       <section className="py-20 bg-white">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
@@ -173,7 +194,7 @@ export default function Home() {
               <p className="text-lg text-slate-600 mb-8">
                 We set the standard for peptide quality in Europe. Our commitment to transparency, rigorous testing, and customer service makes us the trusted choice for researchers across the continent.
               </p>
-              
+
               <div className="space-y-6">
                 <div className="flex">
                   <div className="flex-shrink-0 mt-1">
@@ -182,11 +203,11 @@ export default function Home() {
                     </div>
                   </div>
                   <div className="ml-4">
-                    <h4 className="text-xl font-bold text-slate-900">Independent Lab Testing</h4>
+                    <h3 className="text-xl font-bold text-slate-900">Independent Lab Testing</h3>
                     <p className="mt-2 text-slate-600">Every batch undergoes HPLC and MS testing by independent European laboratories to verify identity and purity.</p>
                   </div>
                 </div>
-                
+
                 <div className="flex">
                   <div className="flex-shrink-0 mt-1">
                     <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary/10 text-primary">
@@ -194,11 +215,11 @@ export default function Home() {
                     </div>
                   </div>
                   <div className="ml-4">
-                    <h4 className="text-xl font-bold text-slate-900">Full COA Transparency</h4>
+                    <h3 className="text-xl font-bold text-slate-900">Full COA Transparency</h3>
                     <p className="mt-2 text-slate-600">We don&apos;t just claim purity; we prove it. Access our COA Vault to download the exact lab report for your specific batch.</p>
                   </div>
                 </div>
-                
+
                 <div className="flex">
                   <div className="flex-shrink-0 mt-1">
                     <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary/10 text-primary">
@@ -206,20 +227,20 @@ export default function Home() {
                     </div>
                   </div>
                   <div className="ml-4">
-                    <h4 className="text-xl font-bold text-slate-900">EU-Based Operations</h4>
+                    <h3 className="text-xl font-bold text-slate-900">EU-Based Operations</h3>
                     <p className="mt-2 text-slate-600">No customs delays or hidden import fees. We ship directly from our EU facilities with discreet, temperature-controlled packaging.</p>
                   </div>
                 </div>
               </div>
             </div>
-            
+
             <div className="relative h-[600px] rounded-2xl overflow-hidden shadow-2xl">
-              <Image 
-                src="https://picsum.photos/seed/scientist/800/1000" 
-                alt="Scientist in lab" 
-                fill 
+              <Image
+                src="/images/lab-portrait.svg"
+                alt="EuroPeptide Pro European laboratory — HPLC and mass spectrometry testing of research peptide vials"
+                fill
                 className="object-cover"
-                referrerPolicy="no-referrer"
+                sizes="(max-width: 1024px) 100vw, 50vw"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-transparent to-transparent" />
               <div className="absolute bottom-8 left-8 right-8">

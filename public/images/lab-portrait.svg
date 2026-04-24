@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000" preserveAspectRatio="xMidYMid slice" role="img" aria-label="EuroPeptide Pro laboratory — HPLC and mass spectrometry testing">
+  <defs>
+    <linearGradient id="lab-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0f172a"/>
+      <stop offset="1" stop-color="#1e293b"/>
+    </linearGradient>
+    <linearGradient id="vial" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#e2e8f0" stop-opacity="0.95"/>
+      <stop offset="1" stop-color="#94a3b8" stop-opacity="0.8"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="1000" fill="url(#lab-bg)"/>
+  <g opacity="0.6" stroke="#334155" stroke-width="1">
+    <path d="M0 200 H800 M0 400 H800 M0 600 H800 M0 800 H800"/>
+  </g>
+  <g transform="translate(240 280)">
+    <rect x="0" y="0" width="120" height="280" rx="18" fill="url(#vial)"/>
+    <rect x="0" y="0" width="120" height="40" rx="18" fill="#475569"/>
+    <rect x="20" y="170" width="80" height="90" rx="8" fill="#0ea5e9" opacity="0.55"/>
+    <text x="60" y="430" fill="#e2e8f0" font-family="Inter,system-ui,sans-serif" font-size="22" text-anchor="middle" font-weight="700">≥99% Purity</text>
+  </g>
+  <g transform="translate(460 340)">
+    <rect x="0" y="0" width="110" height="220" rx="16" fill="url(#vial)"/>
+    <rect x="0" y="0" width="110" height="34" rx="16" fill="#475569"/>
+    <rect x="16" y="130" width="78" height="80" rx="6" fill="#22d3ee" opacity="0.5"/>
+    <text x="55" y="380" fill="#e2e8f0" font-family="Inter,system-ui,sans-serif" font-size="22" text-anchor="middle" font-weight="700">HPLC + MS</text>
+  </g>
+  <g transform="translate(160 700)" stroke="#38bdf8" stroke-width="2" fill="#38bdf8" opacity="0.8">
+    <circle cx="0" cy="0" r="6"/>
+    <circle cx="80" cy="-30" r="6"/>
+    <circle cx="160" cy="10" r="6"/>
+    <circle cx="240" cy="-20" r="6"/>
+    <circle cx="320" cy="20" r="6"/>
+    <circle cx="400" cy="-10" r="6"/>
+    <circle cx="480" cy="30" r="6"/>
+    <line x1="0" y1="0" x2="80" y2="-30"/>
+    <line x1="80" y1="-30" x2="160" y2="10"/>
+    <line x1="160" y1="10" x2="240" y2="-20"/>
+    <line x1="240" y1="-20" x2="320" y2="20"/>
+    <line x1="320" y1="20" x2="400" y2="-10"/>
+    <line x1="400" y1="-10" x2="480" y2="30"/>
+  </g>
+</svg>

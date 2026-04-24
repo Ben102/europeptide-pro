@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { productImage } from '@/lib/products-catalog';
 
 export async function GET() {
   try {
@@ -20,7 +21,7 @@ export async function POST(request: Request) {
         category: data.category,
         dosage: data.dosage,
         price: parseFloat(data.price),
-        image: data.image || 'https://picsum.photos/400/400',
+        image: data.image || productImage(data.name),
         purity: data.purity,
         description: data.description,
       },
