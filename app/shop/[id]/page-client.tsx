@@ -8,6 +8,7 @@ import { ShieldCheck, Truck, FlaskConical, ArrowLeft, CheckCircle2, FileText, Do
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { useCartStore } from '@/lib/store/cartStore';
+import { ResearchDisclaimer } from '@/components/legal/research-disclaimer';
 
 interface Product {
   id: string;
@@ -104,7 +105,7 @@ export default function ProductPageClient({ id }: { id: string }) {
               <Badge variant="outline" className="absolute top-6 right-6 text-green-600 border-green-600 bg-green-50">In Stock</Badge>
               <Image
                 src={product.image}
-                alt={product.name}
+                alt={`${product.name} ${product.dosage} research peptide vial — ${product.purity} purity, ${product.category} category`}
                 fill
                 className="object-contain p-12"
                 referrerPolicy="no-referrer"
@@ -153,11 +154,7 @@ export default function ProductPageClient({ id }: { id: string }) {
                 </div>
               </div>
 
-              <div className="mb-6 p-4 bg-red-50 border border-red-100 rounded-lg">
-                <p className="text-xs text-red-800 font-semibold m-0">
-                  FOR LABORATORY RESEARCH PURPOSES ONLY. NOT FOR HUMAN OR VETERINARY USE.
-                </p>
-              </div>
+              <ResearchDisclaimer className="mb-6" />
 
               <div className="mt-auto space-y-6">
                 <div className="flex items-center space-x-4">
@@ -299,7 +296,7 @@ export default function ProductPageClient({ id }: { id: string }) {
                 <Link key={r.id} href={`/shop/${r.id}`} className="group">
                   <div className="bg-white border border-slate-200 rounded-xl overflow-hidden hover:shadow-md transition-shadow">
                     <div className="relative h-40 bg-slate-50">
-                      <Image src={r.image} alt={r.name} fill className="object-contain p-4" referrerPolicy="no-referrer" unoptimized />
+                      <Image src={r.image} alt={`${r.name} ${r.dosage} research peptide — ${r.purity} purity`} fill className="object-contain p-4" referrerPolicy="no-referrer" unoptimized />
                     </div>
                     <div className="p-4">
                       <p className="font-semibold text-sm text-slate-900 group-hover:text-primary transition-colors line-clamp-1">{r.name}</p>

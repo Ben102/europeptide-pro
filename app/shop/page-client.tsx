@@ -176,10 +176,10 @@ export default function ShopPage() {
                     <div className="relative h-64 w-full bg-white p-6 flex items-center justify-center border-b border-slate-100">
                       <Badge className="absolute top-4 left-4 bg-slate-100 text-slate-600 hover:bg-slate-200 border-0">{product.category}</Badge>
                       <Badge variant="outline" className="absolute top-4 right-4 text-green-600 border-green-600 bg-green-50">In Stock</Badge>
-                      <Image 
-                        src={product.image} 
-                        alt={product.name} 
-                        fill 
+                      <Image
+                        src={product.image}
+                        alt={`${product.name} ${product.dosage} research peptide vial — ${product.purity} purity`}
+                        fill
                         className="object-contain p-8 mix-blend-multiply group-hover:scale-105 transition-transform duration-500"
                         referrerPolicy="no-referrer"
                       />

@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint .",
     "clean": "next clean",
+    "check:h1": "node scripts/check-h1.mjs",
     "postinstall": "prisma generate"
   },
   "dependencies": {

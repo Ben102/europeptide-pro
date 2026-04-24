@@ -1,6 +1,8 @@
 import type { MetadataRoute } from 'next';
 import { SITE_URL } from '@/lib/site-config';
 import { prisma } from '@/lib/prisma';
+import { CATEGORIES } from '@/lib/categories';
+import { BLOG_POSTS } from '@/lib/blog-posts';
 
 export const revalidate = 3600; // refresh sitemap hourly
 
@@ -34,5 +36,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     console.error('sitemap: failed to load products', e);
   }
 
-  return [...staticRoutes, ...productRoutes];
+  const categoryRoutes: MetadataRoute.Sitemap = CATEGORIES.map((c) => ({
+    url: `${SITE_URL}/shop/category/${c.slug}`,
+    lastModified: now,
+    changeFrequency: 'weekly' as const,
+    priority: 0.85,
+  }));
+
+  const blogRoutes: MetadataRoute.Sitemap = BLOG_POSTS.map((p) => ({
+    url: `${SITE_URL}/blog/${p.slug}`,
+    lastModified: new Date(p.publishedAt),
+    changeFrequency: 'monthly' as const,
+    priority: 0.6,
+  }));
+
+  return [...staticRoutes, ...categoryRoutes, ...productRoutes, ...blogRoutes];
 }

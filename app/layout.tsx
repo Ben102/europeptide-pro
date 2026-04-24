@@ -57,9 +57,39 @@ const organizationJsonLd = {
   '@id': `${SITE_URL}/#organization`,
   name: SITE_NAME,
   url: SITE_URL,
-  logo: `${SITE_URL}/logo.png`,
+  logo: {
+    '@type': 'ImageObject',
+    url: `${SITE_URL}/images/hero.svg`,
+    width: 600,
+    height: 600,
+  },
   description: SITE_DESCRIPTION,
-  areaServed: 'EU',
+  areaServed: {
+    '@type': 'Place',
+    name: 'European Union',
+  },
+  address: {
+    '@type': 'PostalAddress',
+    addressLocality: 'Bucharest',
+    addressCountry: 'RO',
+  },
+  founder: {
+    '@type': 'Person',
+    name: 'Dr. Andrei Ionescu',
+    jobTitle: 'Head of Scientific Content & QA',
+  },
+  contactPoint: {
+    '@type': 'ContactPoint',
+    contactType: 'customer support',
+    email: 'support@europeptide-pro.com',
+    areaServed: 'EU',
+    availableLanguage: ['English', 'Romanian'],
+  },
+  sameAs: [
+    'https://twitter.com/europeptidepro',
+    'https://www.linkedin.com/company/europeptide-pro',
+    'https://www.instagram.com/europeptidepro',
+  ],
 };
 
 const websiteJsonLd = {

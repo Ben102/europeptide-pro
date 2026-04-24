@@ -11,7 +11,7 @@ export function Footer() {
 
   return (
     <footer className="bg-slate-900 text-slate-300 py-12">
-      <div className="container mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-8">
+      <div className="container mx-auto px-4 grid grid-cols-1 md:grid-cols-5 gap-8">
         <div>
           <h3 className="text-xl font-bold text-white mb-4">EuroPeptide<span className="text-accent">Pro</span></h3>
           <p className="text-sm mb-4">
@@ -25,13 +25,29 @@ export function Footer() {
         </div>
         
         <div>
-          <h4 className="text-white font-semibold mb-4">Shop</h4>
+          <h4 className="text-white font-semibold mb-4">Shop by Category</h4>
           <ul className="space-y-2 text-sm">
             <li><Link href="/shop" className="hover:text-accent transition-colors">All Peptides</Link></li>
-            <li><Link href="/shop?category=muscle" className="hover:text-accent transition-colors">Muscle Growth</Link></li>
-            <li><Link href="/shop?category=weight-loss" className="hover:text-accent transition-colors">Weight Loss</Link></li>
-            <li><Link href="/shop?category=healing" className="hover:text-accent transition-colors">Healing & Recovery</Link></li>
-            <li><Link href="/shop?category=anti-aging" className="hover:text-accent transition-colors">Anti-Aging</Link></li>
+            <li><Link href="/shop/category/muscle-growth" className="hover:text-accent transition-colors">Muscle Growth</Link></li>
+            <li><Link href="/shop/category/weight-loss" className="hover:text-accent transition-colors">Weight Loss</Link></li>
+            <li><Link href="/shop/category/healing-recovery" className="hover:text-accent transition-colors">Healing &amp; Recovery</Link></li>
+            <li><Link href="/shop/category/anti-aging" className="hover:text-accent transition-colors">Anti-Aging</Link></li>
+            <li><Link href="/shop/category/cognitive-enhancement" className="hover:text-accent transition-colors">Cognitive Enhancement</Link></li>
+            <li><Link href="/shop/category/immune-support" className="hover:text-accent transition-colors">Immune Support</Link></li>
+            <li><Link href="/shop/category/reproductive-health" className="hover:text-accent transition-colors">Reproductive Health</Link></li>
+            <li><Link href="/shop/category/accessories" className="hover:text-accent transition-colors">Accessories</Link></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 className="text-white font-semibold mb-4">Research</h4>
+          <ul className="space-y-2 text-sm">
+            <li><Link href="/blog" className="hover:text-accent transition-colors">Research Blog</Link></li>
+            <li><Link href="/blog/bpc-157-vs-tb-500" className="hover:text-accent transition-colors">BPC-157 vs TB-500</Link></li>
+            <li><Link href="/blog/glp-1-peptide-family-guide" className="hover:text-accent transition-colors">GLP-1 Family Guide</Link></li>
+            <li><Link href="/blog/how-to-reconstitute-research-peptides" className="hover:text-accent transition-colors">Reconstitution Guide</Link></li>
+            <li><Link href="/blog/peptide-coa-explained" className="hover:text-accent transition-colors">COA Explained</Link></li>
+            <li><Link href="/about" className="hover:text-accent transition-colors">About Us</Link></li>
           </ul>
         </div>
 

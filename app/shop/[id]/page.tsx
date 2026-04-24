@@ -22,10 +22,12 @@ export async function generateMetadata({ params }: RouteParams): Promise<Metadat
     return { title: 'Product Not Found', robots: { index: false, follow: false } };
   }
 
-  const title = `${product.name} — Buy Research Peptide | ${SITE_NAME}`;
-  const description = `${product.name} at ${product.purity} purity · ${product.dosage} vial · €${product.price.toFixed(
+  // Extract clean base compound name (strip dosage parens)
+  const baseName = product.name.replace(/\s*\(.*?\)\s*$/, '').trim();
+  const title = `Buy ${baseName} ${product.dosage} Research Peptide — ${product.purity} Purity, EU Lab Tested`;
+  const description = `Order ${baseName} ${product.dosage} research peptide online in Europe. ${product.purity} purity, independently HPLC + MS tested, lyophilized vial, €${product.price.toFixed(
     2,
-  )}. Third-party lab tested, discreet EU shipping within 24 h. For research use only.`;
+  )}. Discreet tracked EU shipping within 24 h. COA available on request. For laboratory research use only.`;
 
   return {
     title,
@@ -36,7 +38,7 @@ export async function generateMetadata({ params }: RouteParams): Promise<Metadat
       description,
       url: `/shop/${product.id}`,
       type: 'website',
-      images: [{ url: product.image, width: 600, height: 600, alt: `${product.name} research peptide vial` }],
+      images: [{ url: product.image, width: 600, height: 600, alt: `${product.name} ${product.dosage} research peptide vial — ${product.purity} purity · EuroPeptide Pro` }],
     },
     twitter: {
       card: 'summary_large_image',

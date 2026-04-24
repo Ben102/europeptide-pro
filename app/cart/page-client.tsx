@@ -57,8 +57,9 @@ export default function CartPage() {
   if (items.length === 0) {
     return (
       <div className="container mx-auto px-4 py-16 text-center min-h-[60vh] flex flex-col items-center justify-center">
-        <h1 className="text-3xl font-bold text-slate-900 mb-4">Your Cart is Empty</h1>
-        <p className="text-slate-500 mb-8 max-w-md">Looks like you haven't added any products to your cart yet.</p>
+        <h1 className="text-3xl font-bold text-slate-900 mb-2">Shopping Cart</h1>
+        <p className="text-lg text-slate-700 mb-2">Your cart is empty.</p>
+        <p className="text-slate-500 mb-8 max-w-md">Looks like you haven&apos;t added any research peptides to your cart yet.</p>
         <Link href="/shop">
           <Button className="bg-primary hover:bg-primary/90">
             <ArrowLeft className="w-4 h-4 mr-2" />
