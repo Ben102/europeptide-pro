@@ -6,6 +6,7 @@ import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
 import { Toaster } from '@/components/ui/sonner';
 import { JsonLd } from '@/components/seo/json-ld';
+import { CookieBanner } from '@/components/legal/cookie-banner';
 import { SITE_URL, SITE_NAME, SITE_TAGLINE, SITE_DESCRIPTION, SITE_LOCALE } from '@/lib/site-config';
 
 const geist = Geist({ subsets: ['latin'], variable: '--font-sans' });
@@ -116,6 +117,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <main className="flex-1">{children}</main>
         <Footer />
         <Toaster />
+        <CookieBanner />
       </body>
     </html>
   );

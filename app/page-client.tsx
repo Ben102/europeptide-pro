@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { ShieldCheck, Truck, FlaskConical, Award, ArrowRight, Star } from 'lucide-react';
 import { toast } from 'sonner';
 import { useCartStore } from '@/lib/store/cartStore';
+import { CATEGORIES as CATEGORY_META } from '@/lib/categories';
 
 export type HomeProduct = {
   id: string;
@@ -19,12 +20,13 @@ export type HomeProduct = {
   purity: string;
 };
 
-const CATEGORIES = [
-  { name: 'Muscle Growth', image: '/images/category-muscle.svg', slug: 'Muscle Growth' },
-  { name: 'Weight Loss', image: '/images/category-weight.svg', slug: 'Weight Loss' },
-  { name: 'Healing & Recovery', image: '/images/category-healing.svg', slug: 'Healing & Recovery' },
-  { name: 'Anti-Aging', image: '/images/category-antiaging.svg', slug: 'Anti-Aging' },
-];
+// Single source of truth via lib/categories.ts — each card links to the
+// dedicated /shop/category/<slug> landing page (not a filter query string).
+const FEATURED_CATEGORIES = (['muscle-growth', 'weight-loss', 'healing-recovery', 'anti-aging'] as const)
+  .map((slug) => {
+    const meta = CATEGORY_META.find((c) => c.slug === slug)!;
+    return { name: meta.name, slug: meta.slug, image: meta.heroImage };
+  });
 
 export default function Home({ bestSellers }: { bestSellers: HomeProduct[] }) {
   const addItem = useCartStore((s) => s.addItem);
@@ -119,8 +121,8 @@ export default function Home({ bestSellers }: { bestSellers: HomeProduct[] }) {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {CATEGORIES.map((category) => (
-              <Link key={category.slug} href={`/shop?category=${encodeURIComponent(category.slug)}`} className="group">
+            {FEATURED_CATEGORIES.map((category) => (
+              <Link key={category.slug} href={`/shop/category/${category.slug}`} className="group">
                 <Card className="overflow-hidden border-0 shadow-md hover:shadow-xl transition-all duration-300">
                   <div className="relative h-48 w-full overflow-hidden">
                     <Image

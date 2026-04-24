@@ -21,7 +21,7 @@ export function Header() {
         <div className="container mx-auto flex items-center justify-between px-4">
           <div className="flex items-center space-x-4">
             <span className="flex items-center"><Phone className="w-3 h-3 mr-1" /> +40 31 229 5555</span>
-            <span className="hidden sm:flex items-center"><Mail className="w-3 h-3 mr-1" /> support@europeptide.com</span>
+            <span className="hidden sm:flex items-center"><Mail className="w-3 h-3 mr-1" /> support@europeptide-pro.com</span>
           </div>
           <div className="flex items-center space-x-4">
             <span className="hidden sm:inline-block">✓ 99%+ Purity</span>
