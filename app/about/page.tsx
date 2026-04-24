@@ -1,3 +1,17 @@
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'About Us',
+  description: 'EuroPeptide Pro is a Bucharest-based EU supplier of third-party tested research peptides. Learn about our mission, quality controls, and independent lab partners.',
+  alternates: { canonical: '/about' },
+  openGraph: {
+    title: 'About EuroPeptide Pro',
+    description: 'Europe’s premier research-peptide supplier — Bucharest-based, independently lab-tested, discreet EU shipping.',
+    url: '/about',
+    type: 'website',
+  },
+};
+
 export default function AboutPage() {
   return (
     <div className="bg-slate-50 min-h-screen py-20">

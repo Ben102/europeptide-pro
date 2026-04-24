@@ -1,5 +1,11 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Package, ShoppingBag, LayoutDashboard, Settings } from 'lucide-react';
+
+export const metadata: Metadata = {
+  title: 'Admin',
+  robots: { index: false, follow: false, nocache: true, googleBot: { index: false, follow: false } },
+};
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (

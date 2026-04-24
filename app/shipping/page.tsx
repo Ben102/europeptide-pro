@@ -1,5 +1,13 @@
+import type { Metadata } from 'next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Truck, ShieldCheck, Globe, Clock, AlertTriangle } from 'lucide-react';
+
+export const metadata: Metadata = {
+  title: 'Shipping — Tracked EU Delivery',
+  description: 'Discreet, tracked shipping to all EU member states from our Bucharest facility. Orders placed before 15:00 ship the same day.',
+  alternates: { canonical: '/shipping' },
+  openGraph: { title: 'Shipping — EuroPeptide Pro', description: 'Tracked, discreet EU shipping within 24 hours.', url: '/shipping', type: 'website' },
+};
 
 export default function ShippingPage() {
   return (
