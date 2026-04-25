@@ -5,7 +5,8 @@ import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { ShieldCheck, ArrowLeft } from 'lucide-react';
+import { ShieldCheck } from 'lucide-react';
+import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { JsonLd } from '@/components/seo/json-ld';
 import { prisma } from '@/lib/prisma';
 import { CATEGORIES, categoryBySlug } from '@/lib/categories';
@@ -89,13 +90,10 @@ export default async function CategoryPage({ params }: RouteParams) {
           <Image src={cat.heroImage} alt="" fill className="object-cover" priority sizes="100vw" />
         </div>
         <div className="container relative z-10 mx-auto px-4">
-          <nav aria-label="Breadcrumb" className="mb-4 text-sm text-slate-300">
-            <Link href="/" className="hover:text-white">Home</Link>
-            <span className="mx-2">/</span>
-            <Link href="/shop" className="hover:text-white">Shop</Link>
-            <span className="mx-2">/</span>
-            <span className="text-white">{cat.name}</span>
-          </nav>
+          <Breadcrumb
+            items={[{ label: 'Shop', href: '/shop' }, { label: cat.name }]}
+            className="mb-4"
+          />
           <Badge className="bg-accent text-white mb-4">Research Category</Badge>
           <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">{cat.name} Research Peptides</h1>
           <p className="text-lg text-slate-300 max-w-2xl">{cat.description}</p>
@@ -103,10 +101,6 @@ export default async function CategoryPage({ params }: RouteParams) {
       </section>
 
       <div className="container mx-auto px-4 py-12">
-        <Link href="/shop" className="inline-flex items-center text-sm font-medium text-slate-500 hover:text-primary mb-8 transition-colors">
-          <ArrowLeft className="w-4 h-4 mr-2" /> All Categories
-        </Link>
-
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <aside className="lg:col-span-1">
             <div className="bg-white rounded-xl border border-slate-200 p-6 sticky top-24">

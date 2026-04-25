@@ -2,7 +2,8 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Clock, User } from 'lucide-react';
+import { Clock, User } from 'lucide-react';
+import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { JsonLd } from '@/components/seo/json-ld';
 import { BLOG_POSTS, blogPostBySlug } from '@/lib/blog-posts';
 import { SITE_URL, SITE_NAME } from '@/lib/site-config';
@@ -74,11 +75,14 @@ export default async function BlogPostPage({ params }: RouteParams) {
     <div className="bg-slate-50 min-h-screen pb-20">
       <JsonLd data={[articleJsonLd, breadcrumbJsonLd]} />
 
-      <article className="container mx-auto px-4 py-12 max-w-3xl">
-        <Link href="/blog" className="inline-flex items-center text-sm font-medium text-slate-500 hover:text-primary mb-8 transition-colors">
-          <ArrowLeft className="w-4 h-4 mr-2" /> Back to Blog
-        </Link>
+      {/* Breadcrumb bar */}
+      <div className="bg-slate-900 py-3">
+        <div className="container mx-auto px-4 max-w-3xl">
+          <Breadcrumb items={[{ label: 'Blog', href: '/blog' }, { label: post.title }]} />
+        </div>
+      </div>
 
+      <article className="container mx-auto px-4 py-12 max-w-3xl">
         <header className="mb-10">
           <Badge className="bg-accent/10 text-accent hover:bg-accent/20 border-0 mb-4">{post.category}</Badge>
           <h1 className="text-3xl md:text-5xl font-bold tracking-tight text-slate-900 mb-6 leading-tight">{post.title}</h1>

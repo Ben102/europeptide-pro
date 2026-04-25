@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ShieldCheck, Truck, FlaskConical, ArrowLeft, CheckCircle2, FileText, Download, Beaker, Microscope, ThermometerSnowflake, PackageCheck } from 'lucide-react';
+import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { useCartStore } from '@/lib/store/cartStore';
@@ -92,11 +93,19 @@ export default function ProductPageClient({ id }: { id: string }) {
 
   return (
     <div className="bg-slate-50 min-h-screen pb-20">
+      {/* Breadcrumb bar */}
+      <div className="bg-slate-900 py-3">
+        <div className="container mx-auto px-4">
+          <Breadcrumb
+            items={[
+              { label: 'Shop', href: '/shop' },
+              { label: product.name },
+            ]}
+          />
+        </div>
+      </div>
+
       <div className="container mx-auto px-4 py-8">
-        <Link href="/shop" className="inline-flex items-center text-sm font-medium text-slate-500 hover:text-primary mb-8 transition-colors">
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Back to Shop
-        </Link>
 
         <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
